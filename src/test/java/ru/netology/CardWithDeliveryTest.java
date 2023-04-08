@@ -2,6 +2,7 @@ package ru.netology;
 
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.Configuration;
+import com.codeborne.selenide.conditions.Text;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.Keys;
 
@@ -26,7 +27,7 @@ public class CardWithDeliveryTest {
         $("[data-test-id=phone] input").setValue("+79999999999");
         $("[data-test-id=agreement]").click();
         $("button.button").click();
-        $("[data-test-id=notification]").should(Condition.appear, Duration.ofSeconds(15));
+        $("[data-test-id=notification]").shouldBe(Text.text("Успешно!\nВстреча успешно забронирована на " + currentDate), Duration.ofSeconds(15));
     }
 
     @Test
@@ -45,6 +46,6 @@ public class CardWithDeliveryTest {
         $("[data-test-id=phone] input").setValue("+79999999999");
         $("[data-test-id=agreement]").click();
         $("button.button").click();
-        $("[data-test-id=notification]").should(Condition.appear, Duration.ofSeconds(15));
+        $("[data-test-id=notification]").shouldBe(Text.text("Успешно!\nВстреча успешно забронирована на " + currentDate), Duration.ofSeconds(15));
     }
 }
