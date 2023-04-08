@@ -1,13 +1,50 @@
 package ru.netology;
 
+import com.codeborne.selenide.Condition;
+import com.codeborne.selenide.Configuration;
 import org.junit.jupiter.api.Test;
+import org.openqa.selenium.Keys;
 
-import static com.codeborne.selenide.Selenide.open;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
+import static com.codeborne.selenide.Selenide.*;
 
 public class CardWithDeliveryTest {
 
     @Test
-    void test1() {
+    void checkCorrectDataEntry() {
         open("http://localhost:9999/");
+        Configuration.holdBrowserOpen = true;
+        $("[data-test-id=city] input").setValue("Москва");
+        $("[data-test-id=date] input").sendKeys(Keys.CONTROL + "a");
+        $("[data-test-id=date] input").sendKeys(Keys.BACK_SPACE);
+        String currentDate = LocalDate.now().plusDays(3).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+        $("[data-test-id=date] input").setValue(currentDate);
+        $("[data-test-id=name] input").setValue("Русланов Руслан");
+        $("[data-test-id=phone] input").setValue("+79999999999");
+        $("[data-test-id=agreement]").click();
+        $("button.button").click();
+        $("[data-test-id=notification]").should(Condition.appear, Duration.ofSeconds(15));
+    }
+
+    @Test
+    void checkCorrectDataEntryWithComplexElements() {
+        open("http://localhost:9999/");
+        Configuration.holdBrowserOpen = true;
+        String desiredCity = "Москва";
+        $x("//*[contains(@placeholder,'Город')]").setValue(desiredCity);
+
+        String currentDate = LocalDate.now().plusDays(10).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+        $("[data-test-id=date] input").sendKeys(Keys.CONTROL + "a");
+        $("[data-test-id=date] input").sendKeys(Keys.BACK_SPACE);
+        $x("//*[contains(@placeholder,'Дата встречи')]").setValue(currentDate);
+
+        $("[data-test-id=name] input").setValue("Русланов Руслан");
+        $("[data-test-id=phone] input").setValue("+79999999999");
+        $("[data-test-id=agreement]").click();
+        $("button.button").click();
+        $("[data-test-id=notification]").should(Condition.appear, Duration.ofSeconds(15));
     }
 }
