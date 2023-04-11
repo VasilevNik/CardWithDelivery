@@ -14,6 +14,10 @@ import static com.codeborne.selenide.Selenide.*;
 
 public class CardWithDeliveryTest {
 
+    public String generateDate(long addDays, String pattern) {
+        return LocalDate.now().plusDays(addDays).format(DateTimeFormatter.ofPattern(pattern));
+    }
+
     @Test
     void checkCorrectDataEntry() {
         open("http://localhost:9999/");
@@ -21,13 +25,15 @@ public class CardWithDeliveryTest {
         $("[data-test-id=city] input").setValue("Москва");
         $("[data-test-id=date] input").sendKeys(Keys.CONTROL + "a");
         $("[data-test-id=date] input").sendKeys(Keys.BACK_SPACE);
-        String currentDate = LocalDate.now().plusDays(3).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+        String currentDate = generateDate(4, "dd.MM.yyyy");
         $("[data-test-id=date] input").setValue(currentDate);
         $("[data-test-id=name] input").setValue("Русланов Руслан");
         $("[data-test-id=phone] input").setValue("+79999999999");
         $("[data-test-id=agreement]").click();
         $("button.button").click();
-        $("[data-test-id=notification]").shouldBe(Text.text("Успешно!\nВстреча успешно забронирована на " + currentDate), Duration.ofSeconds(15));
+        $(".notification__content")
+                .shouldHave(Condition.text("Встреча успешно забронирована на " + currentDate), Duration.ofSeconds(15))
+                .shouldBe(Condition.visible);
     }
 
     @Test
@@ -37,7 +43,7 @@ public class CardWithDeliveryTest {
         String desiredCity = "Москва";
         $x("//*[contains(@placeholder,'Город')]").setValue(desiredCity);
 
-        String currentDate = LocalDate.now().plusDays(10).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+        String currentDate = generateDate(10, "dd.MM.yyyy");
         $("[data-test-id=date] input").sendKeys(Keys.CONTROL + "a");
         $("[data-test-id=date] input").sendKeys(Keys.BACK_SPACE);
         $x("//*[contains(@placeholder,'Дата встречи')]").setValue(currentDate);
@@ -46,6 +52,8 @@ public class CardWithDeliveryTest {
         $("[data-test-id=phone] input").setValue("+79999999999");
         $("[data-test-id=agreement]").click();
         $("button.button").click();
-        $("[data-test-id=notification]").shouldBe(Text.text("Успешно!\nВстреча успешно забронирована на " + currentDate), Duration.ofSeconds(15));
+        $(".notification__content")
+                .shouldHave(Condition.text("Встреча успешно забронирована на " + currentDate), Duration.ofSeconds(15))
+                .shouldBe(Condition.visible);
     }
 }
